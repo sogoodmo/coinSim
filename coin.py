@@ -33,6 +33,9 @@ Maybe in the future I'll try to re-write this in C and add some vectorisation / 
 '''
 
 
+'''
+'Flipping a coin' untill I get 'Heads' (1) 10 times in a row.
+'''
 def runTest():
     count = 1
     attempt = 0
@@ -44,6 +47,9 @@ def runTest():
         attempt += 1
     return attempt 
 
+'''
+Trying to get 10Heads in a row "TARGET" amount of times 
+'''
 def flipCoin(simCount, TARGET):
     tries = [runTest() for _ in range(TARGET)]
     if DEBUG:
@@ -57,6 +63,9 @@ def flipCoin(simCount, TARGET):
     return sum(tries)/len(tries)
 
 
+'''
+Running the simulation "ITR" amount of times
+'''
 avgCount = 0
 for simCount in range(ITR+1):
     avgCount += flipCoin(simCount, TARGET)
