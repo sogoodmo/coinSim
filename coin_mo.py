@@ -57,7 +57,7 @@ def flipCoin(simCount, TARGET):
         \nSlowest Attempt = {max(tries)} \
         \nMedian = {sorted(tries)[len(tries)//2]} \
         \nMode = {max(tries, key=tries.count)}')
-    return sum(tries)/len(tries)
+    return (tries, sum(tries)/len(tries))
 
 
 '''
@@ -65,37 +65,65 @@ Running the simulation "ITR" amount of times
 '''
 def runSimulation():
     avgCount = 0
+    tries = []
     for simCount in range(ITR+1):
-        avgCount += flipCoin(simCount, TARGET)
+        triesCur, avgCur = flipCoin(simCount, TARGET)
+        avgCount += avgCur
+        tries += triesCur
     print(f'\n\nTesting {ITR} simulations each trying to get {CONSECUTIVE_COUNT} Heads in a row 100 Times. \nAverage attempts to get {CONSECUTIVE_COUNT} heads in a row = {round(avgCount/ITR, 2)}\nUsing: {"os.urandom" if TRUE_RANDOM else "random.randint"}')
+    
+
+    # bins = 50
+    # minT = min(tries)
+    # maxT = max(tries)
+    # binWidth = (minT + maxT) // bins
+    # bounds = [(i, i+binWidth) for i in range(0, maxT-minT, binWidth)]
+    # plotData = {bound:0  for bound in bounds}
+    # plotData = [0] * bins 
+    # for val in tries:
+    #     plotData[min(len(plotData) - 1, (val//binWidth))] += 1 
+    # print(plotData)
+    # print(bounds)
+
+    # if not CON:
+    #     plt.xlabel("Attempt #")
+    #     plt.ylabel("Tosses to get {CONSECTUIVE_COUNT} Heads in a row")
+    #     plt.bar([x[0] for x in bounds], plotData)
+    #     plt.show()
+    
+    
     return (CONSECUTIVE_COUNT, round(avgCount/ITR, 2))
+
 TRUE_RANDOM = True
 ITR = 100
 TARGET = 100 
 DEBUG = False
 MAX_CONSEC = 10
+CON = False
 
 '''
 Find the average amount of heads from 1 -> "MAX_CONSEC" and output this data as a json.
 '''
 def main():
     global CONSECUTIVE_COUNT
-    CONSECUTIVE_COUNT = 1
     avgDict = dict()
-    for _ in range(MAX_CONSEC):
-        target, avg = runSimulation()
-        CONSECUTIVE_COUNT += 1
-        avgDict[target] = math.log(avg)
-        
-    with open("out.json", "w") as f:
-        f.write(json.dumps(avgDict))
-        
-    print(list(avgDict.values()))
-    plt.xlabel("Target consectuive heads")
-    plt.ylabel("Average amount of tosses (Log Scale)")
-    plt.bar(list(avgDict.keys()), list(avgDict.values()))
-    plt.show()
-    
+
+    if CON:
+        CONSECUTIVE_COUNT = 1
+        for _ in range(MAX_CONSEC):
+            target, avg = runSimulation()
+            CONSECUTIVE_COUNT += 1
+            avgDict[target] = math.log(avg)
+            with open("out.json", "w") as f:
+                f.write(json.dumps(avgDict))
+        print(list(avgDict.values()))
+        plt.xlabel("Target consectuive heads")
+        plt.ylabel("Average amount of tosses (Log Scale)")
+        plt.bar(list(avgDict.keys()), list(avgDict.values()))
+        plt.show()
+    else:
+        CONSECUTIVE_COUNT = 5
+        runSimulation()
 
 if __name__ == "__main__":
     main()
