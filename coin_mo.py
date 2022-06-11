@@ -1,6 +1,8 @@
 import os 
 import random 
 import json
+import math
+import matplotlib.pyplot as plt
 
 
 '''
@@ -83,10 +85,17 @@ def main():
     for _ in range(MAX_CONSEC):
         target, avg = runSimulation()
         CONSECUTIVE_COUNT += 1
-        avgDict[target] = avg
+        avgDict[target] = math.log(avg)
         
     with open("out.json", "w") as f:
         f.write(json.dumps(avgDict))
+        
+    print(list(avgDict.values()))
+    plt.xlabel("Target consectuive heads")
+    plt.ylabel("Average amount of tosses (Log Scale)")
+    plt.bar(list(avgDict.keys()), list(avgDict.values()))
+    plt.show()
+    
 
 if __name__ == "__main__":
     main()
